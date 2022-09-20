@@ -103,7 +103,7 @@ jobs:
           app-name: 'pttgc-cicd02'
           # Add publish profile from secret that created from publish profile which we downloaded from Azure Portal
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-          slot-name: dev
+          slot-name: pttgc-cicd02-dev
           images:  ${{ secrets.REGISTRY_LOGIN_SERVER }}/simple-service:${{ github.sha }}
 
 
