@@ -168,6 +168,3 @@ jobs:
 4. Create new release with tag version `v1.0.0`, then click create release
 5. Go to `Actions` to see the progress of the `production-release` workflow
 6. Wait until the workflow is done, then go to the Azure Portal, on the production slow, check the image that deployed from `Deployment Center`
- 
- 
- // demo git pull
