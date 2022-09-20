@@ -39,7 +39,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           # This value should match with the name of your app service (it could be difference from this example)
-          app-name: 'pttgc-simple-app'
+          app-name: 'pttgc-cicd02'
           # Add publish profile from secret that created from publish profile which we downloaded from Azure Portal
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           # slot-name, default value is production, we can ignore this line, however for the readability purpose, we should keep it as best practice
