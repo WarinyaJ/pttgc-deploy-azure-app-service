@@ -1,0 +1,47 @@
+name: Production Release and Deploy
+
+on: 
+  release:
+    types:
+      - published
+    branches:
+      - main
+
+jobs:
+  
+  retag-image:
+    name: Retag release image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+
+      - run: echo "Retag image from tag ${{ github.sha }} to ${{ steps.get_version.outputs.VERSION }}"
+      - run: docker pull ${{ secrets.REGISTRY_LOGIN_SERVER }}/simple-service:${{ github.sha }}
+      - run: docker tag ${{ secrets.REGISTRY_LOGIN_SERVER }}/simple-service:${{ github.sha }} ${{ secrets.REGISTRY_LOGIN_SERVER }}/simple-service:${{ steps.get_version.outputs.VERSION }}
+      - run: docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/simple-service:${{ steps.get_version.outputs.VERSION }}
+
+  deploy: 
+    name: Deploy to App Service Production
+    runs-on: ubuntu-latest
+    needs: retag-image
+    steps:
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
+      - name: deploy production slot
+        uses: azure/webapps-deploy@v2
+        with:
+          # This value should match with the name of your app service (it could be difference from this example)
+          app-name: 'pttgc-simple-app'
+          # Add publish profile from secret that created from publish profile which we downloaded from Azure Portal
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          # slot-name, default value is production, we can ignore this line, however for the readability purpose, we should keep it as best practice
+          slot-name: production
+          images:  ${{ secrets.REGISTRY_LOGIN_SERVER }}/simple-service:${{ steps.get_version.outputs.VERSION }}
