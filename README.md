@@ -97,10 +97,12 @@ deploy-dev:
       - name: deploy dev slot
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'simple-service'
+          #app-name: 'pttgc-simple-app'
+          app-name: 'pttgc-demo007'
           # Add publish profile from secret that created from publish profile which we downloaded from Azure Portal
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_DEV }}
-          images: 'repo-name/simple-service:${{ github.sha }}'
+          slot-name: dev
+          images:  ${{ secrets.REGISTRY_LOGIN_SERVER }}/simple-service:${{ github.sha }}
 ```
 6. Commit and push the code, and see how the workflow is running
 7. Login to Azure portal, App Service then select `dev` slot, and see the image tag from `Deployment Center`
